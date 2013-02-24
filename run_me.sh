@@ -2,46 +2,62 @@
 echo "Checking for updates"
 git pull
 
-ISP_PROGRAMMER=arduino
-ISP_TTYPORT=/dev/ttyUSB0
+ISP_PROGRAMMER=usbtiny
+ISP_TTYPORT=usb
 ISP_SPEED=19200
 
 SERIAL_PROGRAMMER=arduino
 SERIAL_TTYPORT=/dev/ttyUSB0
 SERIAL_SPEED=57600
 
+BGEIGIE_VERSION=v3.0.8-iRover-JP
+MASSSTORAGE_VERSION=v3.0.8
+
 echo "Welcome to the flashing script for the bGeigie 3"
-echo "Make sure you have connected your bgeigie to your avr isp programmer and let's roll"
-# ls ?
-read -p "Where is the AVR ISP programmer plugged ? [$ISP_TTYPORT] " ISP_TTYPORT
+echo "STEP 1: Make sure you have everything required:"
+echo "  * bGeigie device to program."
+echo "  * AVR programmer (USBTiny)."
+echo "  * USB-Serial dongle."
 
-echo "Eject SD card, on the selector 1 is on and 2 off"
-read -p "ready ? [yY] "
+#read -p "Click ENTER when ready..."
+xpdf -fullscreen images/Step1.pdf
 
-avrdude -p m32u4 -c $ISP_PROGRAMMER -P $ISP_TTYPORT -b $ISP_SPEED -U lfuse:w:0xde:m -U hfuse:w:0xd8:m -U efuse:w:0xcb:m
-avrdude -p m32u4 -c $ISP_PROGRAMMER -P $ISP_TTYPORT -b $ISP_SPEED -U flash:w:hex/MassStorage-v3.0.5.hex
+echo "STEP 2: Make sure everything is ready:"
+echo "  * bGeigie device is connected to AVR ISP programmer."
+echo "  * SD card ejected."
+echo "  * Selector 1 is ON and 2 is OFF."
 
-echo "SD card still ejected, on the selector 1 is off and 2 on"
-read -p "ready ? [yY] "
+#read -p "Click ENTER when ready..."
+xpdf -fullscreen images/Step2.pdf
 
-avrdude -p m1284p -c $ISP_PROGRAMMER -P $ISP_TTYPORT -b $ISP_SPEED -U lfuse:w:0xff:m -U hfuse:w:0xdc:m -U efuse:w:0xfd:m
-avrdude -p m1284p -c $ISP_PROGRAMMER -P $ISP_TTYPORT -b $ISP_SPEED -U flash:w:hex/optiboot_atmega1284p_8MHz.hex
+avrdude -p m32u4 -c $ISP_PROGRAMMER -U lfuse:w:0xde:m -U hfuse:w:0xd8:m -U efuse:w:0xcb:m
+avrdude -p m32u4 -c $ISP_PROGRAMMER -B 0.5 -U flash:w:hex/MassStorage-${MASSSTORAGE_VERSION}.hex
 
-echo "Selector 1 is on, 2 is on."
-read -p "Done ? [yY] "
+echo "STEP 3: Make sure everything is ready:"
+echo "  * bGeigie device is connected to AVR ISP programmer."
+echo "  * SD card ejected."
+echo "  * Selector 1 is OFF and 2 is ON."
 
-echo "Unplug AVR ISP programmer."
-read -p "Done ? [yY] "
+#read -p "ready ? [yY] "
+xpdf -fullscreen images/Step3.pdf
 
-echo "Plug in Serial programmer."
-read -p "Done ? [yY] "
+avrdude -p m1284p -c $ISP_PROGRAMMER -U lfuse:w:0xff:m -U hfuse:w:0xdc:m -U efuse:w:0xfd:m
+avrdude -p m1284p -c $ISP_PROGRAMMER -B 0.5 -U flash:w:hex/optiboot_atmega1284p_8MHz.hex
 
-read -p "Where is the AVR ISP programmer plugged ? [$SERIAL_TTYPORT] " SERIAL_TTYPORT
+echo "STEP 4: Make sure everything is ready:"
+echo "  * bGeigie device is connected to AVR ISP programmer."
+echo "  * SD card ejected."
+echo "  * Selector 1 is OFF and 2 is ON."
 
-avrdude -p m1284p -b $SERIAL_SPEED -c $SERIAL_PROGRAMMER -P $SERIAL_TTYPORT -U flash:w:hex/bGeigie3-v3.0.5-iRover-JP.hex
+#read -p "ready ? [yY] "
+xpdf -fullscreen images/Step4.pdf
 
-echo "Push SD card back in."
-read -p "Done ? [yY] "
+if [ ! -f $SERIAL_TTYPORT ];
+then
+  read -p "Where is the AVR ISP programmer plugged ? [$SERIAL_TTYPORT] " SERIAL_TTYPORT
+fi
+
+avrdude -p m1284p -b $SERIAL_SPEED -c $SERIAL_PROGRAMMER -P $SERIAL_TTYPORT -U flash:w:hex/bGeigie3-${BGEIGIE_VERSION}.hex
 
 echo "Running test routine..."
 
