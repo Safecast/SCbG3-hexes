@@ -4,7 +4,7 @@ import io
 import sys
 import re
 
-from time import clock
+from time import time
 
 import os
 # chose an implementation, depending on os
@@ -47,6 +47,8 @@ class BGeigieDiagnostic:
   FreeRam = 0
 
   # Diagnostic analysis method
+  # Returns True if device if operational
+  #         False otherwise
   def diagnosticAnalysis(self):
     print "DIAGNOSTIC"
 
@@ -126,8 +128,10 @@ class BGeigieDiagnostic:
 
     if (radio_success and sd_success and sdreader_success and gps_success and features_success):
       print "Result : bGeigie ready for operation."
+      return True
     else:
       print "Result : bGeigie faulty."
+      return False
 
 
 ########
@@ -183,19 +187,19 @@ except serial.SerialException:
   print 'Device can not be found or can not be configured.'
   sys.exit(1)
 
-start = clock()
+start = time()
 gotStart = False
 success = False
 bgd = BGeigieDiagnostic()
 
 # read Lines
-while (not success and clock() - start < timeout):
+while (not success and time() - start < timeout):
   line = ser.readline()
   line = line[:-2] # strip \r\n at end of line
 
   if (line == "--- Diagnostic START ---"):
     gotStart = True
-    start = clock()
+    start = time()
     continue
 
   if (gotStart and line == "--- Diagnostic END ---"):
@@ -203,7 +207,7 @@ while (not success and clock() - start < timeout):
     break
 
   if (gotStart):
-    start = clock()         # reset timeout
+    start = time()         # reset timeout
     diag = line.split(',')  # split at comma
 
     if (diag[0] == "Version"):
@@ -283,9 +287,12 @@ while (not success and clock() - start < timeout):
 ser.close()
 
 if (success):
-  bgd.diagnosticAnalysis()
+  if bgd.diagnosticAnalysis():
+    sys.exit(0)
+  else:
+    sys.exit(1)
 else:
-  print "Timeout : failed to perform diagnostic."
+  print "Timeout : failed to perform diagnostic. Check connection between USB-serial dongle and device."
   sys.exit(1)
 
 
