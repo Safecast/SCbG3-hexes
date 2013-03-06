@@ -15,7 +15,9 @@ Setup environment
         sudo apt-get install gcc-avr
         sudo apt-get install avr-libc
         sudo apt-get install avrdude
+
   Unfortunately, xpdf needs to be installed from source on Ubuntu because of a nasty segmentation fault in the Ubuntu package.
+
         sudo apt-get install libfreetype6-dev lesstif2-dev
         wget ftp://ftp.foolabs.com/pub/xpdf/xpdf-3.03.tar.gz
         tar xzpf xpdf-3.03.tar.gz
@@ -49,7 +51,9 @@ Setup environment
         cd ~
         git clone https://github.com/Safecast/SCbG3-hexes.git
 
-5. Now get a bGeigie3 device to program and start the process by doing
+5. Add shortcut icon on desktop.
+
+6. Now get a bGeigie3 device to program and start the process by doing
 
         cd ~/SCbG3-hexes
         ./run_me.sh
