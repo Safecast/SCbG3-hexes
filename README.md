@@ -53,14 +53,16 @@ Setup environment
 4. Get the latest distribution of the bGeigie3 firmware
 
         cd ~
-        git clone -b stable --single-branch https://github.com/Safecast/SCbG3-hexes.git
+        git clone -b factory --single-branch https://github.com/Safecast/SCbG3-hexes.git
 
-5. Add shortcuts to main Ubuntu menu.
+5. Setup wallpaper and shortcuts.
 
   1. Open folder `misc`.
   2. Drag-and-drop files `ProgramDevice.desktop` and `Update.desktop` into the Ubuntu launcher.
+  3. Right-click on the desktop and select `Change Desktop Background.`
+  4. Click the `+` button to add a new wallpaper and navigate to `SCbG3-hexes/misc` directory. Select `bGeigie_station_wallpaper.png` file.
 
-  These files assume the home directory is `/home/safecast`. If this is not the case, just open the files
+  The desktop files assume the home directory is `/home/safecast`. If this is not the case, just open the files
   and replace everywhere `/home/safecast` by the proper directory.
 
 6. Now get a bGeigie3 device to program, start the process by clicking the `Program Device` icon in the launcher, and follow the instructions.
