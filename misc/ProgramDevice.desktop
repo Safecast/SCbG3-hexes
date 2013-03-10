@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=Program Device
+Comment=Program a bGeigie device.
+Exec=xterm -hold -e "cd $HOME/SCbG3-hexes && ./run_me.sh"
+StartupWMClass=ProgramDevice
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Icon=/home/safecast/SCbG3-hexes/misc/program_icon.svg
+StartupNotify=true

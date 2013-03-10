@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=Update Safecast
+Comment=Upload to latest bGeigie firmware.
+Exec=xterm -hold -e "cd $HOME/SCbG3-hexes && ./update.sh"
+StartupWMClass=ProgramDevice
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Icon=/home/safecast/SCbG3-hexes/misc/update_icon.svg
+StartupNotify=true
