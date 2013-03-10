@@ -42,7 +42,7 @@ then
 fi
 
 # program firmware of 32U4
-avrdude -p m32u4 -c $ISP_PROGRAMMER -B 0.5 -U flash:w:hex/MassStorage-${MASSSTORAGE_VERSION}.hex
+avrdude -p m32u4 -c $ISP_PROGRAMMER -B 1 -U flash:w:hex/MassStorage-${MASSSTORAGE_VERSION}.hex
 if [ $? -ne 0 ];
 then
   echo "Failure: couldn't program firmware of 32U4."
@@ -66,7 +66,7 @@ then
   exit 1
 fi
 
-avrdude -p m1284p -c $ISP_PROGRAMMER -B 0.5 -U flash:w:hex/optiboot_atmega1284p_8MHz.hex
+avrdude -p m1284p -c $ISP_PROGRAMMER -B 1 -U flash:w:hex/optiboot_atmega1284p_8MHz.hex
 if [ $? -ne 0 ];
 then
   echo "Warning: avrdude with exit code different than 0 when programming 1284p bootloader."
