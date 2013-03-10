@@ -74,6 +74,6 @@ Setup environment
 
   Or open a terminal and type
       
-      cd ~/SCbG3-hexes
-      ./update.sh
+        cd ~/SCbG3-hexes
+        ./update.sh
 
