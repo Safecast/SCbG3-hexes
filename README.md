@@ -11,7 +11,7 @@ Setup environment
    have an internet connection, so configure it. It's also a good time to
    install all the Ubuntu updates.
 
-2. Install minimally necessary package.
+2. Install minimally necessary packages.
 
         sudo apt-get install git
         sudo apt-get install python-pip
@@ -53,7 +53,7 @@ Setup environment
 4. Get the latest distribution of the bGeigie3 firmware
 
         cd ~
-        git clone https://github.com/Safecast/SCbG3-hexes.git
+        git clone -b stable --single-branch https://github.com/Safecast/SCbG3-hexes.git
 
 5. Add shortcuts to main Ubuntu menu.
 
@@ -63,14 +63,14 @@ Setup environment
   These files assume the home directory is `/home/safecast`. If this is not the case, just open the files
   and replace everywhere `/home/safecast` by the proper directory.
 
-6. Now get a bGeigie3 device to program and start the process by clicking the `Program Device` icon in the launcher.
+6. Now get a bGeigie3 device to program, start the process by clicking the `Program Device` icon in the launcher, and follow the instructions.
 
   Or open a terminal and type
 
         cd ~/SCbG3-hexes
         ./run_me.sh
 
-7. When in need of updating the firmware files from the repository, click the `Update` icon in the launcher.
+7. When in need of updating the firmware files from the repository, click the `Update Safecast` icon in the launcher.
 
   Or open a terminal and type
       
