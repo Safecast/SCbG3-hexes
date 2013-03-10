@@ -6,7 +6,11 @@ minimal firmwares and scripts install for bGeigie3
 Setup environment
 -----------------
 
-1. Standard install of Ubuntu 12.10. Download from `http://www.ubuntu.com/download/desktop`.
+1. Standard install of Ubuntu 12.10. Download from
+   `http://www.ubuntu.com/download/desktop`. The guide will assume that you
+   have an internet connection, so configure it. It's also a good time to
+   install all the Ubuntu updates.
+
 2. Install minimally necessary package.
 
         sudo apt-get install git
@@ -59,11 +63,17 @@ Setup environment
   These files assume the home directory is `/home/safecast`. If this is not the case, just open the files
   and replace everywhere `/home/safecast` by the proper directory.
 
-6. Now get a bGeigie3 device to program and start the process by doing
+6. Now get a bGeigie3 device to program and start the process by clicking the `Program Device` icon in the launcher.
+
+  Or open a terminal and type
 
         cd ~/SCbG3-hexes
         ./run_me.sh
 
+7. When in need of updating the firmware files from the repository, click the `Update` icon in the launcher.
 
-
+  Or open a terminal and type
+      
+      cd ~/SCbG3-hexes
+      ./update.sh
 
