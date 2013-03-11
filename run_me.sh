@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-ISP_PROGRAMMER=usbtiny
-ISP_TTYPORT=usb
-ISP_SPEED=19200
+ISP_PROGRAMMER="-c avrisp2 -P usb -B 0.5"
 
 SERIAL_PROGRAMMER=arduino
 SERIAL_TTYPORT=/dev/ttyUSB0
@@ -33,7 +31,7 @@ echo "  * Selector 1 is ON and 2 is OFF."
 xpdf -fullscreen images/Step2.pdf 2> /dev/null
 
 # program fuses of 32U4
-avrdude -p m32u4 -c $ISP_PROGRAMMER -U lfuse:w:0xde:m -U hfuse:w:0xd8:m -U efuse:w:0xcb:m
+avrdude -p m32u4 $ISP_PROGRAMMER -U lfuse:w:0xde:m -U hfuse:w:0xd8:m -U efuse:w:0xcb:m
 if [ $? -ne 0 ];
 then
   echo "Failure: couldn't program fuses of 32U4."
@@ -42,7 +40,7 @@ then
 fi
 
 # program firmware of 32U4
-avrdude -p m32u4 -c $ISP_PROGRAMMER -B 1 -U flash:w:hex/MassStorage-${MASSSTORAGE_VERSION}.hex
+avrdude -p m32u4 $ISP_PROGRAMMER -U flash:w:hex/MassStorage-${MASSSTORAGE_VERSION}.hex
 if [ $? -ne 0 ];
 then
   echo "Failure: couldn't program firmware of 32U4."
@@ -58,7 +56,7 @@ echo "  * Selector 1 is OFF and 2 is ON."
 #read -p "ready ? [yY] "
 xpdf -fullscreen images/Step3.pdf 2> /dev/null
 
-avrdude -p m1284p -c $ISP_PROGRAMMER -U lfuse:w:0xff:m -U hfuse:w:0xdc:m -U efuse:w:0xfd:m
+avrdude -p m1284p $ISP_PROGRAMMER -U lfuse:w:0xff:m -U hfuse:w:0xdc:m -U efuse:w:0xfd:m
 if [ $? -ne 0 ];
 then
   echo "Failure: couldn't program fuses of 1284P"
@@ -66,13 +64,12 @@ then
   exit 1
 fi
 
-avrdude -p m1284p -c $ISP_PROGRAMMER -B 1 -U flash:w:hex/optiboot_atmega1284p_8MHz.hex
+avrdude -p m1284p $ISP_PROGRAMMER -U flash:w:hex/optiboot_atmega1284p_8MHz.hex
 if [ $? -ne 0 ];
 then
-  echo "Warning: avrdude with exit code different than 0 when programming 1284p bootloader."
-  #echo "Failure: couldn't program bootloader to 1284P"
-  #failure
-  #exit 1
+  echo "Failure: couldn't program bootloader to 1284P"
+  failure
+  exit 1
 fi
 
 echo "STEP 4: Make sure everything is ready:"
@@ -103,7 +100,9 @@ python bin/bgeigie_diagnostic.py -p $SERIAL_TTYPORT -b 57600
 if [ $? -eq 0 ];
 then
   xpdf -fullscreen images/Step5_success.pdf 2> /dev/null
+  echo "Success. You can close this terminal."
 else
   xpdf -fullscreen images/Step5_failure.pdf 2> /dev/null
+  echo "Failure. Try to find out what went wrong above."
 fi
 
