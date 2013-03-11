@@ -1,7 +1,15 @@
 SCbG3-hexes
 ===========
 
-minimal firmwares and scripts install for bGeigie3
+Minimal firmwares and scripts install for bGeigie3
+
+Hardware Needed
+---------------
+
+* USB-serial dongle.
+* AVR ISP mkII (or a clone).
+* bGeigie3 device to program.
+* Probably a few USB cables suitable for the programmer and dongle.
 
 Setup environment
 -----------------
@@ -44,6 +52,7 @@ Setup environment
     
         sudo bash -c 'mkdir -p /etc/udev/rules.d/ && echo KERNEL==\"ttyUSB[0-9]\",MODE=\"0666\" >> /etc/udev/rules.d/10-local.rules'
         sudo bash -c 'mkdir -p /etc/udev/rules.d/ && echo ATTRS{idVendor}==\"1781\",ATTRS{idProduct}==\"0c9f\",GROUP=\"adm\",MODE=\"0666\" >> /etc/udev/rules.d/10-local.rules'
+        sudo bash -c 'mkdir -p /etc/udev/rules.d/ && echo ATTRS{idVendor}==\"03eb\",ATTRS{idProduct}==\"2104\",GROUP=\"adm\",MODE=\"0666\" >> /etc/udev/rules.d/10-local.rules'
         sudo /etc/init.d/udev restart
 
   Now if you plug an FTDI-USB dongle, you should be able to connect without error by typing in
