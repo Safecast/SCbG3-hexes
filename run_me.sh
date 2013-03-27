@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ISP_PROGRAMMER="-c avrisp2 -P usb -B 0.5"
+ISP_PROGRAMMER="-c avrisp2 -P usb -B 4"
 
 SERIAL_PROGRAMMER=arduino
 SERIAL_TTYPORT=/dev/ttyUSB0
