@@ -146,6 +146,10 @@ port = ''
 baudrate = 57600
 timeout = 10
 
+if (len(sys.argv) < 1):
+  usage()
+  sys.exit(1)
+
 # parse arguments
 n = 1
 while (n < len(sys.argv)):
@@ -162,6 +166,7 @@ while (n < len(sys.argv)):
 if port == '':
   re_port_mac = re.compile('^.*usbserial-[A-Za-z0-9]{8}')
   re_port_linux = re.compile('^/dev/ttyUSB[0-9]*')
+  re_port = re_port_linux
 
   hits = 0
   iterator = sorted(comports())

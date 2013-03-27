@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-git checkout factory
-git pull origin factory
+git checkout SafecastOffice
+git pull origin SafecastOffice
 
 # just indicate if things went well, or not
 if [ $? -ne 0 ];
