@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-ISP_PROGRAMMER="-c avrisp2 -P usb -B 4"
+ISP_PROGRAMMER="avrisp2"
+ISP_SPEED_FUSE=4
+ISP_SPEED_CODE=1
 
 SERIAL_PROGRAMMER=arduino
 SERIAL_TTYPORT=/dev/ttyUSB0
@@ -31,7 +33,7 @@ echo "  * Selector 1 is ON and 2 is OFF."
 xpdf -fullscreen images/Step2.pdf 2> /dev/null
 
 # program fuses of 32U4
-COMMAND="avrdude -p m32u4 $ISP_PROGRAMMER -U lfuse:w:0xde:m -U hfuse:w:0xd8:m -U efuse:w:0xcb:m"
+COMMAND="avrdude -p m32u4 -c $ISP_PROGRAMMER -P usb  -B $ISP_SPEED_FUSE -U lfuse:w:0xde:m -U hfuse:w:0xd8:m -U efuse:w:0xcb:m"
 echo $COMMAND
 $COMMAND
 if [ $? -ne 0 ];
@@ -42,7 +44,7 @@ then
 fi
 
 # program firmware of 32U4
-COMMAND="avrdude -p m32u4 $ISP_PROGRAMMER -U flash:w:hex/MassStorage-${MASSSTORAGE_VERSION}.hex"
+COMMAND="avrdude -p m32u4 -c $ISP_PROGRAMMER -P usb -B $ISP_SPEED_CODE -U flash:w:hex/MassStorage-${MASSSTORAGE_VERSION}.hex"
 echo $COMMAND
 $COMMAND
 if [ $? -ne 0 ];
@@ -60,7 +62,7 @@ echo "  * Selector 1 is OFF and 2 is ON."
 #read -p "ready ? [yY] "
 xpdf -fullscreen images/Step3.pdf 2> /dev/null
 
-COMMAND="avrdude -p m1284p $ISP_PROGRAMMER -U lfuse:w:0xff:m -U hfuse:w:0xdc:m -U efuse:w:0xfd:m"
+COMMAND="avrdude -p m1284p -c $ISP_PROGRAMMER -P usb -B $ISP_SPEED_FUSE -U lfuse:w:0xff:m -U hfuse:w:0xdc:m -U efuse:w:0xfd:m"
 echo $COMMAND
 $COMMAND
 if [ $? -ne 0 ];
@@ -70,7 +72,7 @@ then
   exit 1
 fi
 
-COMMAND="avrdude -p m1284p $ISP_PROGRAMMER -U flash:w:hex/optiboot_atmega1284p_8MHz.hex"
+COMMAND="avrdude -p m1284p -c $ISP_PROGRAMMER -P usb -B $ISP_SPEED_CODE -U flash:w:hex/optiboot_atmega1284p_8MHz.hex"
 echo $COMMAND
 $COMMAND
 if [ $? -ne 0 ];
