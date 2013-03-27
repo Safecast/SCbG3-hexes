@@ -1,0 +1,8 @@
+bGeigie-Mini Firmware variants description
+==========================================
+
+V - Voltage sensing.
+P - PlusShield support.
+J - Coordinate truncation support.
+C - Canmore GPS
+M - MTK GPS
