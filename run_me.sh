@@ -31,7 +31,9 @@ echo "  * Selector 1 is ON and 2 is OFF."
 xpdf -fullscreen images/Step2.pdf 2> /dev/null
 
 # program fuses of 32U4
-avrdude -p m32u4 $ISP_PROGRAMMER -U lfuse:w:0xde:m -U hfuse:w:0xd8:m -U efuse:w:0xcb:m
+COMMAND="avrdude -p m32u4 $ISP_PROGRAMMER -U lfuse:w:0xde:m -U hfuse:w:0xd8:m -U efuse:w:0xcb:m"
+echo $COMMAND
+$COMMAND
 if [ $? -ne 0 ];
 then
   echo "Failure: couldn't program fuses of 32U4."
@@ -40,7 +42,9 @@ then
 fi
 
 # program firmware of 32U4
-avrdude -p m32u4 $ISP_PROGRAMMER -U flash:w:hex/MassStorage-${MASSSTORAGE_VERSION}.hex
+COMMAND="avrdude -p m32u4 $ISP_PROGRAMMER -U flash:w:hex/MassStorage-${MASSSTORAGE_VERSION}.hex"
+echo $COMMAND
+$COMMAND
 if [ $? -ne 0 ];
 then
   echo "Failure: couldn't program firmware of 32U4."
@@ -56,7 +60,9 @@ echo "  * Selector 1 is OFF and 2 is ON."
 #read -p "ready ? [yY] "
 xpdf -fullscreen images/Step3.pdf 2> /dev/null
 
-avrdude -p m1284p $ISP_PROGRAMMER -U lfuse:w:0xff:m -U hfuse:w:0xdc:m -U efuse:w:0xfd:m
+COMMAND="avrdude -p m1284p $ISP_PROGRAMMER -U lfuse:w:0xff:m -U hfuse:w:0xdc:m -U efuse:w:0xfd:m"
+echo $COMMAND
+$COMMAND
 if [ $? -ne 0 ];
 then
   echo "Failure: couldn't program fuses of 1284P"
@@ -64,7 +70,9 @@ then
   exit 1
 fi
 
-avrdude -p m1284p $ISP_PROGRAMMER -U flash:w:hex/optiboot_atmega1284p_8MHz.hex
+COMMAND="avrdude -p m1284p $ISP_PROGRAMMER -U flash:w:hex/optiboot_atmega1284p_8MHz.hex"
+echo $COMMAND
+$COMMAND
 if [ $? -ne 0 ];
 then
   echo "Failure: couldn't program bootloader to 1284P"
@@ -85,7 +93,9 @@ then
   read -p "Where is the AVR ISP programmer plugged ? " SERIAL_TTYPORT
 fi
 
-avrdude -p m1284p -b $SERIAL_SPEED -c $SERIAL_PROGRAMMER -P ${SERIAL_TTYPORT} -U flash:w:hex/bGeigie3-${BGEIGIE_VERSION}.hex
+COMMAND="avrdude -p m1284p -b $SERIAL_SPEED -c $SERIAL_PROGRAMMER -P ${SERIAL_TTYPORT} -U flash:w:hex/bGeigie3-${BGEIGIE_VERSION}.hex"
+echo $COMMAND
+$COMMAND
 if [ $? -ne 0 ];
 then
   echo "Failure: couldn't load bGeigie3 firmware to 1284P"
@@ -95,7 +105,9 @@ fi
 
 echo "Running test routine..."
 
-python bin/bgeigie_diagnostic.py -p $SERIAL_TTYPORT -b 57600
+COMMAND="python bin/bgeigie_diagnostic.py -p $SERIAL_TTYPORT -b 57600"
+echo $COMMAND
+$COMMAND
 
 if [ $? -eq 0 ];
 then
