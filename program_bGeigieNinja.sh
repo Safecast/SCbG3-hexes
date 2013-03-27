@@ -11,15 +11,8 @@ failure(){
   xpdf -fullscreen images/Step5_failure.pdf 2> /dev/null
 }
 
-if [ $# -ne 1 ];
-then
-  echo "Usage: " $0 " <number>"
-  exit 1
-fi
 
-BGEIGIEMINI_SERIAL_NUMBER=$1
-
-echo "Welcome to the programming/configuring script for the bGeigie-Mini"
+echo "Welcome to the programming script for the bGeigie-Ninja"
 echo "STEP 1: Make sure you have everything required:"
 echo "  * bGeigie device to program."
 echo "  * USB-Serial dongle."
@@ -60,28 +53,6 @@ case $CHOICE in
     ;;
 esac
 
-# program the configuration uploader
-COMMAND="avrdude -p m328p -b ${SERIAL_SPEED} -c $SERIAL_PROGRAMMER -P ${SERIAL_TTYPORT} -U flash:w:hex/bGeigieMini-configBurner.hex"
-echo "Upload config burner: ${COMMAND}"
-$COMMAND
-# test exit status
-if [ $? -ne 0 ];
-then
-  echo "Failure: couldn't program number burner."
-  exit 1
-fi
-
-
-COMMAND="python bin/bGeigieMini_configure.py -p $SERIAL_TTYPORT -b $SERIAL_SPEED -n $BGEIGIEMINI_SERIAL_NUMBER"
-echo "Execute: ${COMMAND}"
-$COMMAND
-# test exit status
-if [ $? -ne 0 ];
-then
-  echo "Failure: couldn't burn serial number to bGeigie."
-  exit 1
-fi
-
 # program the device
 COMMAND="avrdude -p m328p -b ${SERIAL_SPEED} -c $SERIAL_PROGRAMMER -P ${SERIAL_TTYPORT} -U flash:w:hex/bGeigieMini-${BGEIGIEMINI_VERSION}-${BGEIGIEMINI_VARIANT}.hex"
 echo "Execute: ${COMMAND}"
@@ -90,9 +61,10 @@ $COMMAND
 # test exit status
 if [ $? -eq 0 ];
 then
-  echo "All success."
+  #xpdf -fullscreen images/Step5_success.pdf 2> /dev/null
+  echo "Success."
 else
-  echo "Failure: writing bGeigie firmware failed."
-  exit 1
+  #xpdf -fullscreen images/Step5_failure.pdf 2> /dev/null
+  echo "Failure."
 fi
 
