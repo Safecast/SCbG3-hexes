@@ -2,7 +2,7 @@
 Version=1.0
 Name=Program Device
 Comment=Program a bGeigie device.
-Exec=xterm -hold -e "cd $HOME/SCbG3-hexes && ./run_me.sh"
+Exec=xterm -hold -e "cd $HOME/SCbG3-hexes && ./program_bGeigie3.sh"
 StartupWMClass=ProgramDevice
 Terminal=false
 X-MultipleArgs=false

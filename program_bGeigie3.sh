@@ -71,7 +71,7 @@ echo $COMMAND
 $COMMAND
 if [ $? -ne 0 ];
 then
-  echo "Failure: couldn't program fuses of 32U4."
+  echo "Failure: couldn't lock the 32U4."
   failure
   exit 1
 fi
