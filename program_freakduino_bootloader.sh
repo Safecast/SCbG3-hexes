@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 PROGRAMMER=avrisp2
-PROGRAMMER=usbtiny
 PORT=usb
 SPEED=1
 
