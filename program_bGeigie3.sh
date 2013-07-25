@@ -8,8 +8,8 @@ SERIAL_PROGRAMMER=arduino
 SERIAL_TTYPORT=/dev/ttyUSB0
 SERIAL_SPEED=57600
 
-BGEIGIE_VERSION=v3.1.1-iRover-JP
-MASSSTORAGE_VERSION=v3.1.1
+BGEIGIE_VERSION=v3.2.2
+MASSSTORAGE_VERSION=v3.2.2
 
 failure(){
   xpdf -fullscreen images/Step5_failure.pdf 2> /dev/null
