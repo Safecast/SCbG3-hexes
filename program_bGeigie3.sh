@@ -8,8 +8,8 @@ SERIAL_PROGRAMMER=arduino
 SERIAL_TTYPORT=/dev/ttyUSB0
 SERIAL_SPEED=57600
 
-BGEIGIE_VERSION=v3.2.2
-MASSSTORAGE_VERSION=v3.2.2
+BGEIGIE_VERSION=v3.2.3
+MASSSTORAGE_VERSION=v3.2.3
 
 failure(){
   xpdf -fullscreen images/Step5_failure.pdf 2> /dev/null
@@ -107,7 +107,7 @@ then
 fi
 
 # finally, upload the bootloader
-COMMAND="avrdude -p m1284p -c $ISP_PROGRAMMER -P usb -B $ISP_SPEED_FAST -U flash:w:hex/optiboot_atmega1284p_8MHz.hex"
+COMMAND="avrdude -p m1284p -c $ISP_PROGRAMMER -P usb -B $ISP_SPEED_FAST -U flash:w:hex/bGeigie3-${BGEIGIE_VERSION}.hex"
 echo $COMMAND
 $COMMAND
 if [ $? -ne 0 ];
@@ -118,7 +118,7 @@ then
 fi
 
 # now, lock the bootloader section and the fuses
-COMMAND="avrdude -p m1284p -c $ISP_PROGRAMMER -P usb -B $ISP_SPEED_SLOW -U lock:w:0x2c:m"
+COMMAND="avrdude -p m1284p -c $ISP_PROGRAMMER -P usb -B $ISP_SPEED_SLOW -U lock:w:0x28:m"
 echo $COMMAND
 $COMMAND
 if [ $? -ne 0 ];
@@ -128,30 +128,23 @@ then
   exit 1
 fi
 
-echo "STEP 4: Make sure everything is ready:"
-echo "  * bGeigie device is connected to AVR ISP programmer."
-echo "  * SD card ejected."
-echo "  * Selector 1 is OFF and 2 is ON."
+echo "STEP 4: Test Mass Storage function."
+echo "  * Connect bGeigie to computer via USB mini cable."
+read -p "Is mass storage mounting correctly ? [nY] "
+echo "  * Unmount mass storage."
+
+echo "STEP 5: Test and configure bGeigie device."
+echo "  * Input the bGeigie Serial ID [SID]:"
 
 #read -p "ready ? [yY] "
-xpdf -fullscreen images/Step4.pdf 2> /dev/null
+#xpdf -fullscreen images/Step4.pdf 2> /dev/null
 
 if [ ! -c ${SERIAL_TTYPORT} ];
 then
-  read -p "Where is the AVR ISP programmer plugged ? " SERIAL_TTYPORT
+  read -p "What is the serial port of the device ? " SERIAL_TTYPORT
 fi
 
-COMMAND="avrdude -p m1284p -b $SERIAL_SPEED -c $SERIAL_PROGRAMMER -P ${SERIAL_TTYPORT} -U flash:w:hex/bGeigie3-${BGEIGIE_VERSION}.hex"
-echo $COMMAND
-$COMMAND
-if [ $? -ne 0 ];
-then
-  echo "Failure: couldn't load bGeigie3 firmware to 1284P"
-  failure
-  exit 1
-fi
-
-echo "Running test routine..."
+echo "Running test and configure routine..."
 
 COMMAND="python bin/bgeigie_diagnostic.py -p $SERIAL_TTYPORT -b 57600"
 echo $COMMAND
