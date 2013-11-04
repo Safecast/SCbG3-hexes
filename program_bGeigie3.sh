@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 ISP_PROGRAMMER="avrisp2"
+#ISP_PROGRAMMER="usbtiny"
 ISP_SPEED_SLOW=4
 ISP_SPEED_FAST=1
 
@@ -128,25 +129,45 @@ then
   exit 1
 fi
 
-echo "STEP 4: Test Mass Storage function."
+echo "STEP 4: Prepare bGeigie for operations."
+echo "  * Insert SD card."
+echo "  * Set selectors 1 and 2 to ON."
+echo "  * Press RESET button for 1 second."
+echo "  * Wait until LEDs finish blinking."
+
+#xpdf -fullscreen images/Step4.pdf 2> /dev/null
+
+echo "STEP 5: Test Mass Storage function."
+echo "  * Insert SD card."
+echo "  * Selector 1 is OFF and 2 is ON."
 echo "  * Connect bGeigie to computer via USB mini cable."
 read -p "Is mass storage mounting correctly ? [nY] "
 echo "  * Unmount mass storage."
 
-echo "STEP 5: Test and configure bGeigie device."
-echo "  * Input the bGeigie Serial ID [SID]:"
-
-#read -p "ready ? [yY] "
 #xpdf -fullscreen images/Step4.pdf 2> /dev/null
 
-if [ ! -c ${SERIAL_TTYPORT} ];
+echo "STEP 6: Test and configure bGeigie device."
+echo "  * Turn bGeigie ON by pressing push button for 2 seconds until LED blinks."
+read -p "Input the bGeigie Serial ID : " BGEIGIE_SID
+CHOICE=${BGEIGIE_SID:-1}
+
+if [ $BGEIGIE_SID -eq -1 ]
 then
-  read -p "What is the serial port of the device ? " SERIAL_TTYPORT
+  echo "Failure: Please input valid bGeigie serial ID number."
+  failure
+  exit 1
 fi
+
+#xpdf -fullscreen images/Step5.pdf 2> /dev/null
+
+while [ ! -c ${SERIAL_TTYPORT} ];
+do
+  read -p "Please enter a valid serial port : " SERIAL_TTYPORT
+done
 
 echo "Running test and configure routine..."
 
-COMMAND="python bin/bgeigie_diagnostic.py -p $SERIAL_TTYPORT -b 57600"
+COMMAND="python bin/bgeigie_diagnostic.py -p $SERIAL_TTYPORT -b 57600 -n $BGEIGIE_SID"
 echo $COMMAND
 $COMMAND
 
