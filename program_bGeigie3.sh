@@ -12,7 +12,7 @@ SERIAL_SPEED=57600
 BGEIGIE_VERSION=v3.2.6
 MASSSTORAGE_VERSION=v3.2.6
 
-#XPDF_OPT=-fullscreen
+XPDF_OPT=-fullscreen
 
 failure(){
   xpdf $XPDF_OPT images/Step_Failure.pdf 2> /dev/null
@@ -167,8 +167,6 @@ then
   failure
   exit 1
 fi
-
-#xpdf $XPDF_OPT images/Step5.pdf 2> /dev/null
 
 while [ ! -c ${SERIAL_TTYPORT} ];
 do
