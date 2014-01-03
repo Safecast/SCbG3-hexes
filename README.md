@@ -21,12 +21,8 @@ Setup environment
 
 2. Install minimally necessary packages.
 
-        sudo apt-get install git
-        sudo apt-get install python-pip
+        sudo apt-get install git python-pip gcc-avr avr-libc avrdude
         sudo pip install --upgrade pyserial
-        sudo apt-get install gcc-avr
-        sudo apt-get install avr-libc
-        sudo apt-get install avrdude
 
   Unfortunately, xpdf needs to be installed from source on Ubuntu because of a nasty segmentation fault in the Ubuntu package.
 
@@ -43,6 +39,7 @@ Setup environment
         sudo make install
 
   Note that you might need to change the `i386-linux-gnu` on the configure line depending on your platform.
+  For example, if you use 64-bit Ubuntu, change it to `x86_64-linux-gnu`.
 
   Optionally, install the screen command line utility to test serial connection
 

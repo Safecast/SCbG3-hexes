@@ -4,7 +4,7 @@ import io
 import sys
 import re
 
-from time import time
+from time import time, sleep
 
 import os
 # chose an implementation, depending on os
@@ -46,11 +46,91 @@ class BGeigieDiagnostic:
   BatteryVoltage = 0
   FreeRam = 0
 
+  # This function parses a line from the diagnostic
+  def parse(self,line):
+
+    diag = line.split(',')  # split at comma
+
+    if (diag[0] == "Version"):
+      self.version = diag[1]
+    elif (diag[0] == "Device ID"):
+      self.ID = diag[1]
+
+    elif (diag[0] == "Radio enabled"):
+      if (diag[1] == "yes"):
+        self.RadioEnabled = True
+    elif (diag[0] == "Radio initialized"):
+      if (diag[1] == "yes"):
+        self.RadioInit = True
+
+    elif (diag[0] == "GPS type MTK"):
+      if (diag[1] == "yes"):
+        self.GPSTypeMTK = True
+    elif (diag[0] == "GPS system startup"):
+      if (diag[1] == "yes"):
+        self.GPSStart = True
+
+    elif (diag[0] == "SD inserted"):
+      if (diag[1] == "yes"):
+        self.SDInserted = True
+    elif (diag[0] == "SD initialized"):
+      if (diag[1] == "yes"):
+        self.SDInit = True
+    elif (diag[0] == "SD open file"):
+      if (diag[1] == "yes"):
+        self.SDOpen = True
+    elif (diag[0] == "SD read write"):
+      if (diag[1] == "yes"):
+        self.SDRW = True
+
+    elif (diag[0] == "SD reader enabled"):
+      if (diag[1] == "yes"):
+        self.SDReaderEnabled = True
+    elif (diag[0] == "SD reader initialized"):
+      if (diag[1] == "yes"):
+        self.SDReaderInit = True
+
+    elif (diag[0] == "Power management enabled"):
+      if (diag[1] == "yes"):
+        self.PwrManageEnabled = True
+
+    elif (diag[0] == "Command line interface enabled"):
+      if (diag[1] == "yes"):
+        self.CmdLineIntEnabled = True
+
+    elif (diag[0] == "Coordinate truncation enabled"):
+      if (diag[1] == "yes"):
+        self.CoordTruncEnabled = True
+
+    elif (diag[0] == "Temperature"):
+      try:
+        self.Temperature = int(diag[1][:-1])
+      except ValueError:
+        print 'Warning : unrecognized temperature format.'
+    elif (diag[0] == "Humidity"):
+      try:
+        self.Humidity = int(diag[1][:-1])
+      except ValueError:
+        print 'Warning : unrecognized humidity format.'
+    elif (diag[0] == "Battery voltage"):
+      try:
+        self.BatteryVoltage = int(diag[1][:-2])
+      except ValueError:
+        print 'Warning : unrecognized battery voltage format.'
+    elif (diag[0] == "System free RAM"):
+      try:
+        self.FreeRam = int(diag[1][:-1])
+      except ValueError:
+        print 'Warning : unrecognized free RAM format.'
+
+
   # Diagnostic analysis method
   # Returns True if device if operational
   #         False otherwise
   def diagnosticAnalysis(self):
     print "DIAGNOSTIC"
+
+    print "  Device SID : " + self.ID
 
     print "  Radio : ",
     if (not self.RadioEnabled or not self.RadioInit):
@@ -127,11 +207,148 @@ class BGeigieDiagnostic:
       print "success"
 
     if (radio_success and sd_success and sdreader_success and gps_success and features_success):
-      print "Result : bGeigie ready for operation."
       return True
     else:
       print "Result : bGeigie faulty."
       return False
+
+###################
+# SERIAL COMMANDS #
+###################
+
+eol = '\r'
+
+def run_diagnostics(serial):
+
+  bgd = BGeigieDiagnostic()
+
+  cmd = 'diagnostics'
+
+  serial.write(eol)
+
+  print "Issue command '" + cmd + "' to bGeigie3."
+  ser.write(cmd + eol)
+
+  sleep(0.2)
+
+  start = time()
+  gotStart = False
+  success = False
+
+  # read Lines
+  while (not success and time() - start < timeout):
+    line = ser.readline()
+    line = line[:-2] # strip \r\n at end of line
+
+    if (line == "--- Diagnostic START ---"):
+      gotStart = True
+      start = time()
+      continue
+
+    if (gotStart and line == "--- Diagnostic END ---"):
+      success = True
+      break
+
+    if (gotStart):
+      start = time()         # reset timeout
+
+      bgd.parse(line)        # parse the received line
+
+  if (success):
+    return bgd
+  else:
+    print "Timeout : failed to perform diagnostic. Check connection between USB-serial dongle and device."
+    return -1
+
+
+# Configure the bGeigie device for post office operations
+def configure_device(serial, sid):
+
+  serial.write(eol)
+
+  cmd = 'config ID ' + ("%3d" % sid)
+  print "Issue command '" + cmd + "' to bGeigie3."
+  ser.write(cmd + eol)
+
+  sleep(1)
+
+  cmd = 'config CoordTrunc on'
+  print "Issue command '" + cmd + "' to bGeigie3."
+  ser.write(cmd + eol)
+
+  sleep(1)
+
+  cmd = 'config SerialOutput off'
+  print "Issue command '" + cmd + "' to bGeigie3."
+  ser.write(cmd + eol)
+
+  sleep(1)
+
+  cmd = 'config SDRW off'
+  print "Issue command '" + cmd + "' to bGeigie3."
+  ser.write(cmd + eol)
+
+  sleep(1)
+
+  cmd = 'config HVSense off'
+  print "Issue command '" + cmd + "' to bGeigie3."
+  ser.write(cmd + eol)
+
+  sleep(1)
+
+  cmd = 'config save'
+  print "Issue command '" + cmd + "' to bGeigie3."
+  ser.write(cmd + eol)
+
+  sleep(1)
+
+
+# Read the configuration of the device
+def check_config(serial, mem, sid):
+
+  if (mem == 'file'):
+    cmd = 'config show file'
+  elif (mem == 'eeprom'):
+    cmd = 'config show eeprom'
+  else:
+    cmd = 'config show'
+
+  serial.write(eol)
+
+  sleep(0.1)
+
+  serial.write(cmd + eol)
+  
+  start = time()
+
+  CHKID = "%3d" % sid
+
+  # read Lines
+  while (time() - start < timeout):
+    line = ser.readline()
+    line = line[:-2] # strip \r\n at end of line
+
+    pair = line.split(':')
+
+    if (pair[0] == "ID" and pair[1] != CHKID):
+      return False
+
+    if (pair[0] == "SerialOutput" and pair[1] != "0"):
+      return False
+
+    if (pair[0] == "CoordTrunc" and pair[1] != "1"):
+      return False
+
+    if (pair[0] == "HVSense" and pair[1] != "0"):
+      return False
+
+    if (pair[0] == "SDRW" and pair[1] != "0"):
+      return False
+    else:
+      break
+
+  return True
+  
 
 
 ########
@@ -146,9 +363,7 @@ port = ''
 baudrate = 57600
 timeout = 10
 
-if (len(sys.argv) < 1):
-  usage()
-  sys.exit(1)
+sid = 300
 
 # parse arguments
 n = 1
@@ -158,6 +373,9 @@ while (n < len(sys.argv)):
     n += 2
   elif (sys.argv[n] == '-b'):
     baudrate = int(sys.argv[n+1])
+    n += 2
+  elif (sys.argv[n] == '-n'):
+    sid = int(sys.argv[n+1])
     n += 2
   else:
     usage()
@@ -192,113 +410,40 @@ except serial.SerialException:
   print 'Device can not be found or can not be configured.'
   sys.exit(1)
 
-start = time()
-gotStart = False
-success = False
-bgd = BGeigieDiagnostic()
 
-# read Lines
-while (not success and time() - start < timeout):
-  line = ser.readline()
-  line = line[:-2] # strip \r\n at end of line
+# configure the device
+configure_device(ser, sid)
 
-  if (line == "--- Diagnostic START ---"):
-    gotStart = True
-    start = time()
-    continue
+# run the diagnostics
+bgd = run_diagnostics(ser)
 
-  if (gotStart and line == "--- Diagnostic END ---"):
-    success = True
-    break
-
-  if (gotStart):
-    start = time()         # reset timeout
-    diag = line.split(',')  # split at comma
-
-    if (diag[0] == "Version"):
-      bgd.version = diag[1]
-    elif (diag[0] == "Device ID"):
-      bgd.ID = diag[1]
-
-    elif (diag[0] == "Radio enabled"):
-      if (diag[1] == "yes"):
-        bgd.RadioEnabled = True
-    elif (diag[0] == "Radio initialized"):
-      if (diag[1] == "yes"):
-        bgd.RadioInit = True
-
-    elif (diag[0] == "GPS type MTK"):
-      if (diag[1] == "yes"):
-        bgd.GPSTypeMTK = True
-    elif (diag[0] == "GPS system startup"):
-      if (diag[1] == "yes"):
-        bgd.GPSStart = True
-
-    elif (diag[0] == "SD inserted"):
-      if (diag[1] == "yes"):
-        bgd.SDInserted = True
-    elif (diag[0] == "SD initialized"):
-      if (diag[1] == "yes"):
-        bgd.SDInit = True
-    elif (diag[0] == "SD open file"):
-      if (diag[1] == "yes"):
-        bgd.SDOpen = True
-    elif (diag[0] == "SD read write"):
-      if (diag[1] == "yes"):
-        bgd.SDRW = True
-
-    elif (diag[0] == "SD reader enabled"):
-      if (diag[1] == "yes"):
-        bgd.SDReaderEnabled = True
-    elif (diag[0] == "SD reader initialized"):
-      if (diag[1] == "yes"):
-        bgd.SDReaderInit = True
-
-    elif (diag[0] == "Power management enabled"):
-      if (diag[1] == "yes"):
-        bgd.PwrManageEnabled = True
-
-    elif (diag[0] == "Command line interface enabled"):
-      if (diag[1] == "yes"):
-        bgd.CmdLineIntEnabled = True
-
-    elif (diag[0] == "Coordinate truncation enabled"):
-      if (diag[1] == "yes"):
-        bgd.CoordTruncEnabled = True
-
-    elif (diag[0] == "Temperature"):
-      try:
-        bgd.Temperature = int(diag[1][:-1])
-      except ValueError:
-        print 'Warning : unrecognized temperature format.'
-    elif (diag[0] == "Humidity"):
-      try:
-        bgd.Humidity = int(diag[1][:-1])
-      except ValueError:
-        print 'Warning : unrecognized humidity format.'
-    elif (diag[0] == "Battery voltage"):
-      try:
-        bgd.BatteryVoltage = int(diag[1][:-2])
-      except ValueError:
-        print 'Warning : unrecognized battery voltage format.'
-    elif (diag[0] == "System free RAM"):
-      try:
-        bgd.FreeRam = int(diag[1][:-1])
-      except ValueError:
-        print 'Warning : unrecognized free RAM format.'
-    else:
-      continue
+# check the config is saved to file and eeprom
+chk_ram    = check_config(ser, 'RAM', sid)
+chk_eeprom = check_config(ser, 'eeprom', sid)
+chk_file   = check_config(ser, 'file', sid)
       
+# close serial port
 ser.close()
 
-if (success):
+# check the results of all tests
+if (bgd != -1):
   if bgd.diagnosticAnalysis():
-    sys.exit(0)
+    if (not chk_ram):
+      print "Error: RAM does not contain correct configuration."
+    if (not chk_eeprom):
+      print "Error: EEPROM does not contain correct configuration."
+    if (not chk_file):
+      print "Error: Configuration File does not contain correct configuration."
+    if (chk_ram and chk_eeprom and chk_file):
+      print "Result : bGeigie ready for operation."
+      sys.exit(0) #success
+    else:
+      sys.exit(1) # fail
   else:
-    sys.exit(1)
+    sys.exit(1) # fail
 else:
   print "Timeout : failed to perform diagnostic. Check connection between USB-serial dongle and device."
-  sys.exit(1)
+  sys.exit(1) #fail
 
 
 
