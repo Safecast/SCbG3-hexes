@@ -4,7 +4,7 @@ SERIAL_PROGRAMMER=arduino
 SERIAL_TTYPORT=/dev/ttyUSB0
 SERIAL_SPEED=57600
 
-BGEIGIENINJA_VERSION=v1.1.4
+BGEIGIENINJA_VERSION=v1.1.5
 
 failure(){
   xpdf -fullscreen images/Step5_failure.pdf 2> /dev/null
